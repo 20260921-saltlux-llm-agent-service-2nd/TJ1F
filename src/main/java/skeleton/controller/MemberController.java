@@ -129,8 +129,20 @@ public class MemberController {
      * 실패하면 "회원 탈퇴에 실패했습니다."를 출력하고 false를 반환한다.
      */
     public boolean deleteMyAccount() {
-        // TODO: 로그인 회원을 삭제하고 성공 시 로그인 상태를 해제하세요.
-        return false;
+        if (loginMember == null) return false; // 로그인 멤버가 없는 상태
+
+        if (memberRepository.findByPhone(loginMember.getPhone()) != null) { // 로그인된 멤버도 있고, 해당 멤버의 휴대폰 번호 정보도 있는 상태
+            if (memberRepository.deleteById(loginMember.getMemberId()) == true) { // 로그인된 멤버의 계정 삭제가 성공한 상태
+                loginMember = null;
+                memberView.displayMessage("회원 탈퇴가 완료되었습니다.");
+                return true;
+            } else { // 로그인된 멤버의 계정 삭제가 실패한 상태
+                memberView.displayMessage("회원 탈퇴에 실패하였습니다.");
+                return false;
+            }
+        } else { // 로그인된 멤버는 있지만 전화번호가 저장되어 있지 않은 상태
+            return false;
+        }
     }
 
     /*
@@ -139,7 +151,7 @@ public class MemberController {
      * 현재 loginMember를 null로 변경하고 "로그아웃되었습니다."를 출력한다.
      */
     public void logout() {
-        if(loginMember!=null) {
+        if (loginMember != null) {
             loginMember = null;
             memberView.displayMessage("로그아웃되었습니다.");
         }
