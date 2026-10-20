@@ -1,7 +1,9 @@
 package skeleton.view;
 
+import skeleton.model.Member;
 import skeleton.model.Membership;
 
+import java.sql.Connection;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,13 @@ public class MemberView {
      */
     public void displayMemberships(List<Membership> memberships) {
         // TODO: 현재 구독 목록을 보기 좋은 형식으로 출력하세요.
+        for (Membership membership : memberships) {
+            System.out.println("구독 ID : " + membership.getMembershipId()
+                            + ", OTT : " + membership.getOttType()
+                            + ", 플랜 : " + membership.getPlanName()
+                            + ", 가입일 : " + membership.getEnrollDate()
+                            + " , 만료일 : " + membership.getExpiryDate());
+        }
     }
 
     /*
