@@ -5,6 +5,8 @@ import skeleton.repository.MemberRepository;
 import skeleton.repository.MembershipRepository;
 import skeleton.view.MemberView;
 
+import java.util.List;
+
 // 사용자 입력과 repository/view 사이의 흐름을 조정한다.
 public class MemberController {
 
@@ -30,6 +32,37 @@ public class MemberController {
      */
     public void signUp(String name, int age, String phone) {
         // TODO: 입력값과 휴대폰 번호 중복을 확인한 뒤 신규 회원을 저장하세요.
+
+
+        if(name != null && age >= 1 && phone != null){
+            if(memberRepository.findByPhone(phone) != null){
+                memberView.displayMessage("이미 등록된 휴대폰 번호입니다.");
+            }else{
+
+                Member member = new Member();
+
+                member.setName(name);
+                member.setAge(age);
+                member.setPhone(phone);
+
+                if(memberRepository.save(member)){
+                    memberView.displayMessage("가입 성공!");
+                }else{
+                    memberView.displayMessage("가입 실패!");
+                }
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
     }
 
     /*
