@@ -114,7 +114,16 @@ public class MemberRepository {
      * SQL은 prop.getProperty("deleteMemberById")로 조회한다.
      */
     public boolean deleteById(int memberId) {
-        // TODO: XML의 SQL을 사용해 로그인 회원을 삭제하세요.
-        return false;
+
+        int result = 0;
+
+        try (Connection conn = JDBCTemplate.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(prop.getProperty("deleteMemberById"));
+        ) {
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result == 0 ? false : true;
     }
 }
