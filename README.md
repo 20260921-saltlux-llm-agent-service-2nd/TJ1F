@@ -3,7 +3,7 @@
 [솔트룩스] AI 에이전트 개발자 부트캠프 1차 프로젝트 구현 저장소입니다.
 
 
-# 📝 Git Convention!!
+# 📝 Git Convention!!!
 
 ## 1. Commit Message Convention
 
