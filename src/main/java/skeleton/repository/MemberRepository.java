@@ -1,9 +1,14 @@
 package skeleton.repository;
 
+import skeleton.common.JDBCTemplate;
 import skeleton.model.Member;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -52,8 +57,26 @@ public class MemberRepository {
      * SQL은 prop.getProperty("selectMemberByPhone")로 조회한다.
      */
     public Member findByPhone(String phone) {
-        // TODO: XML의 SQL을 사용해 휴대폰 번호가 일치하는 회원을 조회하세요.
-        return null;
+        Connection conn = JDBCTemplate.getConnection();
+        Member result = null;
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(prop.getProperty("selectMemberByPhone"));
+            pstmt.setString(1, phone);
+            ResultSet rSet = pstmt.executeQuery();
+
+            if (rSet.next()) {
+                result = new Member(
+                        rSet.getInt("member_id"),
+                        rSet.getString("name"),
+                        rSet.getInt("age"),
+                        rSet.getString("phone")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /*

@@ -40,8 +40,14 @@ public class MemberController {
      * 회원이 없으면 "등록되지 않은 휴대폰 번호입니다."를 출력하고 false를 반환한다.
      */
     public boolean login(String phone) {
-        // TODO: 휴대폰 번호로 로그인 상태를 설정하세요.
-        return false;
+        loginMember = memberRepository.findByPhone(phone);
+        if (loginMember != null) {
+            memberView.displayMessage(loginMember.getName() + "님 로그인을 환영합니다.");
+            return true;
+        } else {
+            memberView.displayMessage("등록되지 않은 휴대폰 번호입니다.");
+            return false;
+        }
     }
 
     /*

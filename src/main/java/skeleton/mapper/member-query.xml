@@ -7,7 +7,11 @@
     <entry key="insertMember">TODO</entry>
 
     <!-- TODO: 휴대폰 번호로 회원을 조회하는 SQL을 작성하세요. -->
-    <entry key="selectMemberByPhone">TODO</entry>
+    <entry key="selectMemberByPhone">
+        SELECT *
+        FROM member_tbl
+        WHERE phone = ?;
+    </entry>
 
     <!-- TODO: member_id로 회원을 삭제하는 SQL을 작성하세요. -->
     <entry key="deleteMemberById">TODO</entry>
