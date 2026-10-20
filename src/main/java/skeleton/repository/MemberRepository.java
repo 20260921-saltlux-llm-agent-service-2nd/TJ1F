@@ -42,6 +42,30 @@ public class MemberRepository {
      */
     public boolean save(Member member) {
         // TODO: XML의 SQL을 사용해 JDBC로 신규 회원을 저장하세요.
+
+        int result = 0;
+        String query = prop.getProperty("insertMember");
+
+        try (Connection con = JDBCTemplate.getConnection();
+             PreparedStatement pstm = con.prepareStatement(query);
+        ) {
+
+
+            pstm.setString(1, "name");
+            pstm.setString(2, "age");
+            pstm.setString(3, "phone");
+
+            result = pstm.executeUpdate();
+            if (result == 1) {
+                return true;
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
         return false;
     }
 
