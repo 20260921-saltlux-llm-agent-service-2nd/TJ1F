@@ -1,18 +1,20 @@
 package skeleton.repository;
 
+import skeleton.common.JDBCTemplate;
 import skeleton.model.Membership;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * 구독 정보 JDBC 처리 담당.
- *
+ * <p>
  * 모든 변경 쿼리는 membership_id뿐 아니라 로그인 회원의 member_id도
  * WHERE 조건으로 사용해야 한다.</p>
  */
@@ -59,7 +61,37 @@ public class MembershipRepository {
      */
     public List<Membership> findActiveMembershipsByMemberId(int memberId) {
         // TODO: XML의 SQL을 사용해 로그인 회원의 현재 구독 목록을 조회하세요.
-        return new ArrayList<>();
+        Connection con = JDBCTemplate.getConnection();
+        PreparedStatement pstmt = null;
+        Properties prop = new Properties();
+        List<Membership> memberships = new ArrayList<>();
+
+        try {
+            prop.loadFromXML(new FileInputStream("src/main/java/skeleton/mapper/membership-query.xml"));
+            String query = prop.getProperty("selectActiveMemberships");
+
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, memberId);
+
+            ResultSet rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                memberships.add(new Membership(
+                        rset.getInt("membership_id"),
+                        rset.getInt("member_id"),
+                        rset.getString("ott_type"),
+                        rset.getString("plan_name"),
+                        rset.getObject("enroll_date", LocalDateTime.class),
+                        rset.getObject("expiry_date", LocalDateTime.class),
+                        rset.getBoolean("active")
+                ));
+            }
+
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+        return memberships;
     }
 
     /*
@@ -100,6 +132,32 @@ public class MembershipRepository {
      */
     public boolean deleteMembership(int membershipId, int memberId) {
         // TODO: XML의 SQL을 사용해 로그인 회원 본인의 구독 기록만 삭제하세요.
+
+        String query = prop.getProperty("deleteMembership");
+        int result =0;
+
+        System.out.println("result = " + result);
+        try(Connection con = JDBCTemplate.getConnection();
+            PreparedStatement psmt = con.prepareStatement(query);
+        ){
+
+            psmt.setInt(1, memberId);
+            psmt.setInt(2,membershipId);
+            result = psmt.executeUpdate();
+
+            System.out.println("result = " + result);
+
+            if (result == 1){
+                return true;
+            }
+
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
         return false;
     }
 

@@ -16,7 +16,13 @@
     <entry key="updateMembershipExpiry">TODO</entry>
 
     <!-- TODO: 로그인 회원 본인의 구독 기록 삭제 SQL을 작성하세요. -->
-    <entry key="deleteMembership">TODO</entry>
+    <entry key="deleteMembership">
+
+        delete  from membership_tbl
+        where member_id = ?
+        AND membership_id = ?;
+
+    </entry>
 
     <!-- TODO: OTT별 이용했던 플랜 목록 조회 SQL을 작성하세요. -->
     <entry key="selectPlanHistory">TODO</entry>

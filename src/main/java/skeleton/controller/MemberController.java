@@ -1,9 +1,12 @@
 package skeleton.controller;
 
 import skeleton.model.Member;
+import skeleton.model.Membership;
 import skeleton.repository.MemberRepository;
 import skeleton.repository.MembershipRepository;
 import skeleton.view.MemberView;
+
+import java.util.List;
 
 // 사용자 입력과 repository/view 사이의 흐름을 조정한다.
 public class MemberController {
@@ -30,6 +33,37 @@ public class MemberController {
      */
     public void signUp(String name, int age, String phone) {
         // TODO: 입력값과 휴대폰 번호 중복을 확인한 뒤 신규 회원을 저장하세요.
+
+
+        if(name != null && age >= 1 && phone != null){
+            if(memberRepository.findByPhone(phone) != null){
+                memberView.displayMessage("이미 등록된 휴대폰 번호입니다.");
+            }else{
+
+                Member member = new Member();
+
+                member.setName(name);
+                member.setAge(age);
+                member.setPhone(phone);
+
+                if(memberRepository.save(member)){
+                    memberView.displayMessage("가입 성공!");
+                }else{
+                    memberView.displayMessage("가입 실패!");
+                }
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
     }
 
     /*
@@ -40,8 +74,14 @@ public class MemberController {
      * 회원이 없으면 "등록되지 않은 휴대폰 번호입니다."를 출력하고 false를 반환한다.
      */
     public boolean login(String phone) {
-        // TODO: 휴대폰 번호로 로그인 상태를 설정하세요.
-        return false;
+        loginMember = memberRepository.findByPhone(phone);
+        if (loginMember != null) {
+            memberView.displayMessage(loginMember.getName() + "님 로그인을 환영합니다.");
+            return true;
+        } else {
+            memberView.displayMessage("등록되지 않은 휴대폰 번호입니다.");
+            return false;
+        }
     }
 
     /*
@@ -65,6 +105,13 @@ public class MemberController {
      */
     public void displayMyActiveMemberships() {
         // TODO: 로그인 회원의 현재 구독 목록을 화면에 전달하세요.
+        Member member = memberRepository.findByPhone(loginMember.getPhone());
+        List<Membership> membership = membershipRepository.findActiveMembershipsByMemberId(member.getMemberId());
+        if (!membership.isEmpty()) {
+            memberView.displayMemberships(membershipRepository.findActiveMembershipsByMemberId(loginMember.getMemberId()));
+        } else {
+            memberView.displayMessage("현재 이용 중인 구독이 없습니다.");
+        }
     }
 
     /*
@@ -101,6 +148,22 @@ public class MemberController {
      */
     public void deleteMyMembership(int membershipId) {
         // TODO: 로그인 회원 본인의 구독 기록을 삭제하세요.
+
+
+        boolean memberShipCheck;
+        memberShipCheck =
+       membershipRepository.deleteMembership(membershipId, loginMember.getMemberId());
+        System.out.println("memberShipCheck = " + memberShipCheck);
+
+        if(memberShipCheck) {
+            memberView.displayMessage("구독 기록이 삭제되었습니다");
+        } else {
+            memberView.displayMessage("삭제할 수 있는 내 구독을 찾지 못했습니다");
+        }
+
+
+
+
     }
 
     /*
@@ -123,8 +186,20 @@ public class MemberController {
      * 실패하면 "회원 탈퇴에 실패했습니다."를 출력하고 false를 반환한다.
      */
     public boolean deleteMyAccount() {
-        // TODO: 로그인 회원을 삭제하고 성공 시 로그인 상태를 해제하세요.
-        return false;
+        if (loginMember == null) return false; // 로그인 멤버가 없는 상태
+
+        if (memberRepository.findByPhone(loginMember.getPhone()) != null) { // 로그인된 멤버도 있고, 해당 멤버의 휴대폰 번호 정보도 있는 상태
+            if (memberRepository.deleteById(loginMember.getMemberId()) == true) { // 로그인된 멤버의 계정 삭제가 성공한 상태
+                loginMember = null;
+                memberView.displayMessage("회원 탈퇴가 완료되었습니다.");
+                return true;
+            } else { // 로그인된 멤버의 계정 삭제가 실패한 상태
+                memberView.displayMessage("회원 탈퇴에 실패하였습니다.");
+                return false;
+            }
+        } else { // 로그인된 멤버는 있지만 전화번호가 저장되어 있지 않은 상태
+            return false;
+        }
     }
 
     /*
@@ -133,6 +208,9 @@ public class MemberController {
      * 현재 loginMember를 null로 변경하고 "로그아웃되었습니다."를 출력한다.
      */
     public void logout() {
-        // TODO: 로그인 상태를 해제하세요.
+        if (loginMember != null) {
+            loginMember = null;
+            memberView.displayMessage("로그아웃되었습니다.");
+        }
     }
 }
