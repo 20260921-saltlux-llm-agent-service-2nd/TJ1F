@@ -51,9 +51,9 @@ public class MemberRepository {
         ) {
 
 
-            pstm.setString(1, "name");
-            pstm.setString(2, "age");
-            pstm.setString(3, "phone");
+            pstm.setString(1, member.getName());
+            pstm.setInt(2, member.getAge());
+            pstm.setString(3, member.getPhone());
 
             result = pstm.executeUpdate();
             if (result == 1) {
