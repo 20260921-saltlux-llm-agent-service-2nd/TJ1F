@@ -114,12 +114,12 @@ public class MemberRepository {
      * SQL은 prop.getProperty("deleteMemberById")로 조회한다.
      */
     public boolean deleteById(int memberId) {
-
         int result = 0;
 
         try (Connection conn = JDBCTemplate.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(prop.getProperty("deleteMemberById"));
         ) {
+            pstmt.setInt(1, memberId);
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
