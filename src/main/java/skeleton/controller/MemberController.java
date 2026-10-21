@@ -148,6 +148,22 @@ public class MemberController {
      */
     public void deleteMyMembership(int membershipId) {
         // TODO: 로그인 회원 본인의 구독 기록을 삭제하세요.
+
+
+        boolean memberShipCheck;
+        memberShipCheck =
+       membershipRepository.deleteMembership(membershipId, loginMember.getMemberId());
+        System.out.println("memberShipCheck = " + memberShipCheck);
+
+        if(memberShipCheck) {
+            memberView.displayMessage("구독 기록이 삭제되었습니다");
+        } else {
+            memberView.displayMessage("삭제할 수 있는 내 구독을 찾지 못했습니다");
+        }
+
+
+
+
     }
 
     /*

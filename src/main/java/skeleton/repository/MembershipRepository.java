@@ -132,6 +132,32 @@ public class MembershipRepository {
      */
     public boolean deleteMembership(int membershipId, int memberId) {
         // TODO: XML의 SQL을 사용해 로그인 회원 본인의 구독 기록만 삭제하세요.
+
+        String query = prop.getProperty("deleteMembership");
+        int result =0;
+
+        System.out.println("result = " + result);
+        try(Connection con = JDBCTemplate.getConnection();
+            PreparedStatement psmt = con.prepareStatement(query);
+        ){
+
+            psmt.setInt(1, memberId);
+            psmt.setInt(2,membershipId);
+            result = psmt.executeUpdate();
+
+            System.out.println("result = " + result);
+
+            if (result == 1){
+                return true;
+            }
+
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
         return false;
     }
 
