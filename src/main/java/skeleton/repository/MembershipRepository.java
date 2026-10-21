@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.sql.Date.valueOf;
+
 /**
  * 구독 정보 JDBC 처리 담당.
  * <p>
@@ -47,7 +49,41 @@ public class MembershipRepository {
                                  String planName,
                                  int subscriptionDays) {
         // TODO: XML의 SQL을 사용해 로그인 회원의 신규 OTT 구독을 저장하세요.
-        return false;
+        Connection con = JDBCTemplate.getConnection();
+        PreparedStatement pstmt = null;
+        Properties prop = new Properties();
+        boolean booleanAddMembership = false;
+        int result;
+
+        LocalDateTime enrollDate = LocalDateTime.now();
+        LocalDateTime expiryDate = enrollDate.plusDays(subscriptionDays);
+
+        try {
+            prop.loadFromXML(new FileInputStream("src/main/java/skeleton/mapper/membership-query.xml"));
+            String query = prop.getProperty("insertMembership");
+
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, memberId);
+            pstmt.setString(2,ottType);
+            pstmt.setString(3, planName);
+            pstmt.setObject(4, enrollDate);
+            pstmt.setObject(5, expiryDate);
+
+            result = pstmt.executeUpdate();
+
+            if (result == 1){
+                booleanAddMembership = true;
+                System.out.println("성공적으로 신규 구독을 추가하였습니다.");
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return booleanAddMembership;
     }
 
     /*
