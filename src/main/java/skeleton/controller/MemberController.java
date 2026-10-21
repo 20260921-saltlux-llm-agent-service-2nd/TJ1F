@@ -94,6 +94,13 @@ public class MemberController {
      */
     public void addMyMembership(String ottType, String planName, int subscriptionDays) {
         // TODO: 입력값을 검증하고 로그인 회원의 신규 구독을 추가하세요.
+        Member member = memberRepository.findByPhone(loginMember.getPhone());
+        if (!ottType.isEmpty() && !planName.isEmpty() && subscriptionDays > 1) {
+            membershipRepository.addMembership(loginMember.getMemberId(), ottType, planName, subscriptionDays);
+            System.out.println("구독이 추가되었습니다.");
+        } else {
+            System.out.println("구독 추가에 실패했습니다.");
+        }
     }
 
     /*
